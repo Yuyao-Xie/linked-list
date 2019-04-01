@@ -1,3 +1,5 @@
+// Yuyao Xie
+//Lacee Xu
 #include <stdio.h>
 #include<stdlib.h>
 #include <string.h>
@@ -32,9 +34,26 @@ struct LinkedList{
     int length;
 };
 
-void combineListToStringHelper(struct LinkedList* list, char* string);
+void printNode (struct Node* node);
 void printList(struct LinkedList*);
+void selectByIndex(struct LinkedList* list, int index);
+void modify(struct LinkedList *list, int index, struct Object value);
+struct LinkedList* append(struct LinkedList *list, struct Object object);
+int length(struct LinkedList list);
+void insert(struct LinkedList *list, int index, struct Object object);
+void delete(struct LinkedList* list);
+char* toStringHelper(struct Node* node);
+void combineListToStringHelper(struct LinkedList* list, char* string);
+struct Node* min(struct LinkedList* list);
+struct Node* max(struct LinkedList* list);
+void concat(struct LinkedList* listOne, struct LinkedList* listTwo);
+void reverse(struct LinkedList* list);
+struct Node* getPreviousNodeOfMaxHelper(struct LinkedList* list);
+void sort(struct LinkedList* list, Boolean reverse);
 struct Object* createObjectFromInput(char *inputValue);
+void printMenu();
+struct LinkedList* createList();
+struct LinkedList* convertStringToList(char *inputStr, int len);
 
 
 void printNode (struct Node* node){
@@ -401,7 +420,6 @@ struct LinkedList* convertStringToList(char *inputStr, int len)
 
     while (pch != NULL)
     {
-//        printf ("%s\n", pch);
         append(innerlist, *createObjectFromInput(pch));
         pch = strtok (NULL, ",");
     }
