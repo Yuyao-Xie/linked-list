@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include<stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
-#define Boolean char
+#define Boolean int
 #define TRUE 1
 #define FALSE 0
 
@@ -22,7 +23,6 @@ struct Object{
 struct Node{
     struct Object value;
     struct Node* next;
-    //struct Node* previous;
 };
 
 
@@ -34,6 +34,7 @@ struct LinkedList{
 
 void combineListToStringHelper(struct LinkedList* list, char* string);
 void printList(struct LinkedList*);
+struct Object* createObjectFromInput(char *inputValue);
 
 
 void printNode (struct Node* node){
@@ -42,15 +43,15 @@ void printNode (struct Node* node){
     }
     switch (node->value.type) {
         case INTEGER: {
-            printf("%d,", node->value.data.Integer);
+            printf("%d", node->value.data.Integer);
             break;
         }
         case FLOAT: {
-            printf("%f,", node->value.data.Float);
+            printf("%f", node->value.data.Float);
             break;
         }
         case STRING: {
-            printf("%s,", node->value.data.String);
+            printf("%s", node->value.data.String);
             break;
         }
         case LIST: {
@@ -66,11 +67,22 @@ void printNode (struct Node* node){
 
 void printList(struct LinkedList *list){
     struct Node* pointer = list->head;
+
+    if(pointer == NULL) {
+        printf("List is empty!\n");
+        return;
+    }
+
+    printf("[");
     while(pointer != NULL){
         printNode(pointer);
+        if(pointer->next != NULL) {
+            printf(",");
+        }
         pointer = pointer->next;
     }
-    printf("\n");
+    printf("]");
+
     return;
 }
 
@@ -106,7 +118,7 @@ void selectByIndex(struct LinkedList* list, int index){
     }
 }
 
-void modifyByIndex(struct LinkedList* list,int index, struct Object value){
+void modify(struct LinkedList *list, int index, struct Object value){
     struct Node* pointer = list->head;
     int i = 0;
     while(pointer != NULL && i < index){
@@ -117,24 +129,36 @@ void modifyByIndex(struct LinkedList* list,int index, struct Object value){
     return;
 }
 
-void appendToList(struct LinkedList* list,struct Object object){
+struct LinkedList* append(struct LinkedList *list, struct Object object){
     struct Node* newNode = malloc(sizeof(struct Node));
+
     newNode->value = object;
-    //newNode->previous = list->tail;
     newNode->next = NULL;
-    list->tail->next = newNode;
-    list->tail = newNode;
+
+    if (list->tail == NULL) {
+
+        list->head = newNode;
+        list->tail = newNode;
+
+    } else {
+        list->tail->next = newNode;
+        list->tail = newNode;
+
+    }
     list->length++;
-    return;
+    return list;
 }
 
 int length(struct LinkedList list){return list.length;}
 
-void insertByIndex(struct LinkedList* list, int index, struct Object object){
-    struct Node* pointer = list->head;
+void insert(struct LinkedList *list, int index, struct Object object){
+    struct Node *head = malloc(sizeof(struct Node));
+    head->next = list->head;
+    struct Node* pointer = head;
     int i = 0;
-    while(pointer != NULL && i < index - 1){
+    while(pointer != NULL && i < index){
         pointer = pointer->next;
+        i++;
     }
     if(pointer != NULL){
         struct Node* newNode = malloc(sizeof(struct Node));
@@ -145,30 +169,32 @@ void insertByIndex(struct LinkedList* list, int index, struct Object object){
     }else{
         printf("Index out of bound!\n");
     }
-
+    if(index == 0) {
+        list->head = head->next;
+    }
+    free(head);
     return;
 }
 
 void delete(struct LinkedList* list){
-    free(list);
-    free(list->head);
-    if(list->head != NULL){
-        struct Node* pointer = list->head->next;
-        while(pointer != NULL){
-            free(pointer);
-            list->head = pointer;
-            pointer = pointer->next;
+    while(list->head != NULL){
+        struct Node* pointer = list->head;
+        list->head = list->head->next;
+        if (pointer->value.type == STRING) {
+            free(pointer->value.data.String);
         }
+        if (pointer->value.type == LIST) {
+            delete(pointer->value.data.list);
+        }
+        free(pointer);
     }
-    free(list->tail);
-
+    free(list);
 }
 
 char* toStringHelper(struct Node* node){
     char* string = malloc(100*sizeof(char));
     switch (node->value.type){
         case INTEGER:{
-           // itoa(node->value.data.Integer,string, 10);
             sprintf(string,"%d", node->value.data.Integer);
             break;
         }
@@ -205,8 +231,8 @@ struct Node* min(struct LinkedList* list){
     while(pointer != NULL){
         char* string = toStringHelper(pointer);
         if(strcmp(minString, string) > 0){
-           minString = string;
-           minNode = pointer;
+            minString = string;
+            minNode = pointer;
         }
         pointer = pointer->next;
     }
@@ -292,7 +318,7 @@ struct Node* getPreviousNodeOfMaxHelper(struct LinkedList* list){
         }
         pointer = pointer->next;
     }
-    if(strcmp(toStringHelper(list->head), maxString) <= 0){
+    if(strcmp(toStringHelper(list->head), maxString) >= 0){
         previousNode = malloc(sizeof(struct Node));
         previousNode->next = list->head;
     }
@@ -300,91 +326,200 @@ struct Node* getPreviousNodeOfMaxHelper(struct LinkedList* list){
 }
 
 void sort(struct LinkedList* list, Boolean reverse){
+    struct Node* newHead = malloc(sizeof(struct Node));
+    struct Node* newListPtr = newHead;
     if(!reverse){
         struct Node* previousOfMinNode = NULL;
         struct Node* minNode = NULL;
-        struct Node* newHead = list->head;
         while(list->head != NULL){
             previousOfMinNode = getPreviousNodeOfMinHelper(list);
             minNode = previousOfMinNode->next;
+            newListPtr->next = minNode;
+            newListPtr = minNode;
             if(minNode == list->head){
                 list->head = list->head->next;
-            }else{
+                free(previousOfMinNode);
+            } else {
                 previousOfMinNode->next = minNode->next;
-                minNode->next = newHead;
-                newHead = minNode;
-            }
-            if(list->head !=NULL && list->head->next == NULL){
-                list->tail = list->head;
             }
         }
-        list->head = newHead;
-        free(previousOfMinNode);
     }else{
         struct Node* previousOfMaxNode = NULL;
         struct Node* maxNode = NULL;
-        struct Node* newHead = list->head;
         while(list->head != NULL){
             previousOfMaxNode = getPreviousNodeOfMaxHelper(list);
             maxNode = previousOfMaxNode->next;
-            if(previousOfMaxNode->next == list->head){
+            newListPtr->next = maxNode;
+            newListPtr = newListPtr->next;
+            if(maxNode == list->head){
                 list->head = list->head->next;
+                free(previousOfMaxNode);
             }else{
                 previousOfMaxNode->next = maxNode->next;
-                maxNode->next = newHead;
-                newHead = maxNode;
-            }
-            if(list->head->next == NULL){
-                list->tail = list->head;
             }
         }
-        list->head = newHead;
-        free(previousOfMaxNode);
     }
+    list->head = newHead->next;
+    list->tail = newListPtr;
+    free(newHead);
+}
+
+void printMenu() {
+    printf("Python Linked List Menu\n");
+    printf("   Selected the following options\n");
+    printf("\ta: Print linked list\n");
+    printf("\tb: Print length of linked list\n");
+    printf("\tc: Append to linked list\n");
+    printf("\td: Modify linked list at index\n");
+    printf("\te: Insert to linked list at index\n");
+    printf("\tf: Find min element in linked list\n");
+    printf("\tg: Find max element in linked list\n");
+    printf("\th: Concat two linked list\n");
+    printf("\ti: Reverse linked list\n");
+    printf("\tj: Sort linked list\n");
+    printf("\tk: Sort linked list in reverse\n");
+    printf("\tl: Delete linked list\n");
+}
+
+struct LinkedList* createList() {
+    struct LinkedList* list = malloc(sizeof(struct LinkedList));
+    list->head = NULL;
+    list->tail = NULL;
+    list->length = 0;
+    return list;
+}
+
+struct LinkedList* convertStringToList(char *inputStr, int len)
+{
+    struct LinkedList *innerlist = createList();
+
+    char * pch;
+    inputStr[len-1] = '\0';
+    inputStr++;
+
+    pch = strtok (inputStr,",");
+
+    while (pch != NULL)
+    {
+//        printf ("%s\n", pch);
+        append(innerlist, *createObjectFromInput(pch));
+        pch = strtok (NULL, ",");
+    }
+
+    return innerlist;
+}
+
+struct Object* createObjectFromInput(char *inputValue) {
+    struct Object *value = malloc(sizeof(struct Object));
+    int length = strlen(inputValue);
+    Boolean isFloat = FALSE;
+    Boolean isString = FALSE;
+    Boolean isList = FALSE;
+
+    if(inputValue[0] == '[' && inputValue[length-1] == ']') {
+        isList = TRUE;
+    }
+    else {
+        for (int i = 0; i< length; i++) {
+            if (inputValue[i] == '.' && !isFloat) {
+                isFloat = TRUE;
+            } else if (!isdigit(inputValue[i])) {
+                isString = TRUE;
+                break;
+            }
+        }
+    }
+
+    if (isString) {
+        value->type = STRING;
+        value->data.String = strcpy(malloc((strlen(inputValue) + 1) * sizeof(char)), inputValue);
+    } else if (isFloat) {
+        value->type = FLOAT;
+        value->data.Float = atof(inputValue);
+    } else if (isList) {
+        value->type = LIST;
+        value->data.list = convertStringToList(inputValue, length);
+    } else {
+        value->type = INTEGER;
+        value->data.Integer = atoi(inputValue);
+    }
+    return value;
 }
 
 int main() {
-    struct LinkedList *list = NULL;
-    list = malloc(2*sizeof(struct Node));
+    struct LinkedList *list = createList();
 
-    struct Node *head = malloc(sizeof(struct Node));
-    struct Object *value_one = malloc(sizeof(struct Object));
-    value_one->data.Integer= 1;
-    value_one->type = INTEGER;
-    head->value = *value_one;
-    head->next = NULL;
-   // head->previous = NULL;
-    list->head = head;
+    char option;
+    char *inputValue = malloc(128 * sizeof(char));
+    int index;
+    while(1) {
+        printMenu();
 
-    struct Node *tail = malloc(sizeof(struct Node));
-    struct Object *value_two = malloc(sizeof(struct Object));
-    value_two->data.Integer = 2;
-    value_two->type = INTEGER;
-    tail->value = *value_two;
-    tail->next = NULL;
-   // tail->previous = head;
-    list->tail = tail;
-    head->next = tail;
-
-    struct Object *value_three = malloc(sizeof(struct Object));
-    value_three->data.Integer = 3;
-    value_three->type = INTEGER;
-    appendToList(list, *value_three);
-    printList(list);
-    selectByIndex(list,1);
-    reverse(list);
-    printList(list);
-    modifyByIndex(list,1,*value_three);
-    printList(list);
-    sort(list,FALSE);
-    printList(list);
-    printf("%d\n", min(list)->value.data.Integer);
-
-    struct Object* value_four = malloc(10*sizeof(char));
-    value_four->data.String = "Hello";
-    value_four->type = STRING;
-    insertByIndex(list,1,*value_four);
-    printList(list);
-
-    return 0;
+        gets(inputValue);
+        if (strlen(inputValue) == 0 || strlen(inputValue) > 1) {
+            printf("Please input valid option.\n");
+            continue;
+        }
+        option = inputValue[0];
+        switch (option) {
+            case 'a':
+                printList(list);
+                printf("\n");
+                break;
+            case 'b':
+                printf("The length of list is %d.\n", length(*list));
+                break;
+            case 'c':
+                printf("Please input the value you want.\n");
+                gets(inputValue);
+                append(list, *createObjectFromInput(inputValue));
+                break;
+            case 'd':
+                printf("Enter a index you want to modify in the Linked List.\n");
+                scanf(" %d", &index);
+                gets(inputValue);
+                printf("Please input the value you want.\n");
+                gets(inputValue);
+                modify(list, index, *createObjectFromInput(inputValue));
+                break;
+            case 'e':
+                printf("Enter a index you want to insert in the Linked List.\n");
+                scanf(" %d", &index);
+                gets(inputValue);
+                printf("Please input the value you want.\n");
+                gets(inputValue);
+                insert(list, index, *createObjectFromInput(inputValue));
+                break;
+            case 'f':
+                printf("Min Node: ");
+                printNode(min(list));
+                printf("\n");
+                break;
+            case 'g':
+                printf("Max Node: ");
+                printNode(max(list));
+                printf("\n");
+                break;
+            case 'h':
+                printf("Please input the list you want.\n");
+                gets(inputValue);
+                concat(list, convertStringToList(inputValue, strlen(inputValue)));
+                break;
+            case 'i':
+                reverse(list);
+                break;
+            case 'j':
+                sort(list, FALSE);
+                break;
+            case 'k':
+                sort(list, TRUE);
+                break;
+            case 'l':
+                delete(list);
+                list = createList();
+                break;
+            default:
+                return 0;
+        }
+    }
 }
