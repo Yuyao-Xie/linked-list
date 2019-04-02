@@ -36,8 +36,8 @@ struct LinkedList{
 
 void printNode (struct Node* node);
 void printList(struct LinkedList*);
-void selectByIndex(struct LinkedList* list, int index);
-void modify(struct LinkedList *list, int index, struct Object value);
+struct Object* selectByIndex(struct LinkedList* list, int index);
+void modify(struct LinkedList *list, int* indices, int length, struct Object value);
 struct LinkedList* append(struct LinkedList *list, struct Object object);
 int length(struct LinkedList list);
 void insert(struct LinkedList *list, int index, struct Object object);
@@ -84,6 +84,34 @@ void printNode (struct Node* node){
     }
 }
 
+void printObject(struct Object *object) {
+    if(object == NULL){
+        return;
+    }
+    switch (object->type) {
+        case INTEGER: {
+            printf("%d", object->data.Integer);
+            break;
+        }
+        case FLOAT: {
+            printf("%f", object->data.Float);
+            break;
+        }
+        case STRING: {
+            printf("%s", object->data.String);
+            break;
+        }
+        case LIST: {
+            printList(object->data.list);
+            break;
+        }
+        default: {
+            printf("Error！");
+            break;
+        }
+    }
+}
+
 void printList(struct LinkedList *list){
     struct Node* pointer = list->head;
 
@@ -105,15 +133,27 @@ void printList(struct LinkedList *list){
     return;
 }
 
-void selectByIndex(struct LinkedList* list, int index){
+struct Object* getValue(struct LinkedList* list, int* indices, int length) {
+    for (int i = 0; i<length - 1; i++){
+        struct Object *value = selectByIndex(list, indices[i]);
+        if (value == NULL || value->type != LIST) {
+            return NULL;
+        }
+        list = value->data.list;
+    }
+    return selectByIndex(list, indices[length - 1]);
+}
+
+struct Object* selectByIndex(struct LinkedList* list, int index){
     struct Node* pointer = list->head;
     int i = 0;
     while(pointer != NULL && i < index){
         pointer = pointer->next;
         i++;
     }
-    struct Object res = pointer->value;
-    switch (res.type){
+    return pointer;
+
+    /*switch (res.type){
         case INTEGER:{
             printf("%d,", res.data.Integer);
             break;
@@ -134,18 +174,15 @@ void selectByIndex(struct LinkedList* list, int index){
             printf("Error！");
             break;
         }
-    }
+    }*/
 }
 
-void modify(struct LinkedList *list, int index, struct Object value){
-    struct Node* pointer = list->head;
-    int i = 0;
-    while(pointer != NULL && i < index){
-        pointer = pointer->next;
-        i++;
+void modify(struct LinkedList *list, int* indices, int length, struct Object value){
+    struct Object *object = getValue(list, indices, length);
+    if (object == NULL) {
+        return;
     }
-    pointer->value = value;
-    return;
+    *object = value;
 }
 
 struct LinkedList* append(struct LinkedList *list, struct Object object){
@@ -406,6 +443,11 @@ struct LinkedList* createList() {
     list->tail = NULL;
     list->length = 0;
     return list;
+}
+
+int* convertStringToIntegerArray(char *inputStr, int len) {
+    int* res = malloc(len * sizeof(int));
+    return res;
 }
 
 struct LinkedList* convertStringToList(char *inputStr, int len)
