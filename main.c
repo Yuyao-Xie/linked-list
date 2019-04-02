@@ -37,7 +37,7 @@ struct LinkedList{
 void printNode (struct Node* node);
 void printList(struct LinkedList*);
 struct Object* selectByIndex(struct LinkedList* list, int index);
-void modify(struct LinkedList *list, int* indices, int length, struct Object value);
+Boolean modify(struct LinkedList *list, int* indices, int length, struct Object value);
 struct LinkedList* append(struct LinkedList *list, struct Object object);
 int length(struct LinkedList list);
 void insert(struct LinkedList *list, int index, struct Object object);
@@ -76,7 +76,7 @@ void printNode (struct Node* node){
             break;
         }
         case STRING: {
-            printf("%s", node->value.data.String);
+            printf("\"%s\"", node->value.data.String);
             break;
         }
         case LIST: {
@@ -92,6 +92,7 @@ void printNode (struct Node* node){
 
 void printObject(struct Object *object) {
     if(object == NULL){
+        printf("Value is not found!");
         return;
     }
     switch (object->type) {
@@ -173,29 +174,6 @@ struct Object* selectByIndex(struct LinkedList* list, int index){
         i++;
     }
     return &pointer->value;
-
-    /*switch (res.type){
-        case INTEGER:{
-            printf("%d,", res.data.Integer);
-            break;
-        }
-        case FLOAT:{
-            printf("%f,", res.data.Float);
-            break;
-        }
-        case STRING:{
-            printf("%s,", res.data.String);
-            break;
-        }
-        case LIST:{
-            printList(res.data.list);
-            break;
-        }
-        default:{
-            printf("Error！");
-            break;
-        }
-    }*/
 }
 
 /*
@@ -207,10 +185,10 @@ struct Object* selectByIndex(struct LinkedList* list, int index){
  *   index: int index in the linked list to be modified
  *   value: Object elment to replace the current element
  */
-void modify(struct LinkedList *list, int* indices, int length, struct Object value){
+Boolean modify(struct LinkedList *list, int* indices, int length, struct Object value){
     struct Object *object = getValue(list, indices, length);
     if (object == NULL) {
-        return;
+        return FALSE;
     }
     *object = value;
 }
@@ -582,7 +560,8 @@ void printMenu() {
     printf("\ti: Reverse linked list\n");
     printf("\tj: Sort linked list\n");
     printf("\tk: Sort linked list in reverse\n");
-    printf("\tl: Delete linked list\n");
+    printf("\tl: Select a value at index\n");
+    printf("\tm: Delete linked list\n");
 }
 
 /*
@@ -716,7 +695,8 @@ int main() {
 
     char option;
     char *inputValue = malloc(128 * sizeof(char));
-    int index;
+    int index, indicesLength;
+    int* indices;
     while(1) {
         printMenu();
 
@@ -746,7 +726,9 @@ int main() {
                 int* indices = convertStringToIntegerArray(inputValue, indicesLength);
                 printf("Please input the value you want.\n");
                 gets(inputValue);
-                modify(list, indices, indicesLength, *createObjectFromInput(inputValue));
+                if (modify(list, indices, indicesLength, *createObjectFromInput(inputValue)) == FALSE){
+                    printf("Invalid index\n");
+                }
                 free(indices);
                 break;
             case 'e':
@@ -782,6 +764,15 @@ int main() {
                 sort(list, TRUE);
                 break;
             case 'l':
+                printf("Enter a index you want to select in the Linked List.\n");
+                gets(inputValue);
+                indicesLength = calculateLength(inputValue);
+                indices = convertStringToIntegerArray(inputValue, indicesLength);
+                printObject(getValue(list, indices, indicesLength));
+                printf("\n");
+                free(indices);
+                break;
+            case 'm':
                 delete(list);
                 list = createList();
                 break;
