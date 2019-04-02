@@ -277,6 +277,15 @@ void delete(struct LinkedList* list){
     free(list);
 }
 
+/*
+ * Function: toStringHelper
+ * ----------------------------
+ *   Helper function to convert Node* to string
+ *
+ *   node: struct Node* to be converted to string
+ *
+ *   return: char* str that's converted
+ */
 char* toStringHelper(struct Node* node){
     char* string = malloc(100*sizeof(char));
     switch (node->value.type){
@@ -298,6 +307,15 @@ char* toStringHelper(struct Node* node){
     }
     return string;
 }
+
+/*
+ * Function: combineListToStringHelper
+ * ----------------------------
+ *   Helper function convert LinkedList to char* str
+ *
+ *   list: struct LinkedList* to be converted to string
+ *   string: char* str ptr that represents the list
+ */
 void combineListToStringHelper(struct LinkedList* list, char* string){
     struct Node* pointer = list->head;
     while(pointer != NULL){
@@ -400,7 +418,15 @@ void reverse(struct LinkedList* list){
     return;
 }
 
-
+/*
+ * Function: getPreviousNodeOfMinHelper
+ * ----------------------------
+ *   Helper function to get the previous min Node
+ *
+ *   list: pointer to struct LinkedList* 
+ *
+ *   return: struct Node* previous min node
+ */
 struct Node* getPreviousNodeOfMinHelper(struct LinkedList* list){
     if(list->head == NULL){
         return NULL;
@@ -423,6 +449,15 @@ struct Node* getPreviousNodeOfMinHelper(struct LinkedList* list){
     return previousNode;
 }
 
+/*
+ * Function: getPreviousNodeOfMaxHelper
+ * ----------------------------
+ *   Helper function to get the previous max Node
+ *
+ *   list: pointer to struct LinkedList* 
+ *
+ *   return: struct Node* previous max node
+ */
 struct Node* getPreviousNodeOfMaxHelper(struct LinkedList* list){
     if(list->head == NULL){
         return NULL;
@@ -491,6 +526,11 @@ void sort(struct LinkedList* list, Boolean reverse){
     free(newHead);
 }
 
+/*
+ * Function: printMenu
+ * ----------------------------
+ *   print the menu of the linklist application
+ */
 void printMenu() {
     printf("Python Linked List Menu\n");
     printf("   Selected the following options\n");
@@ -508,6 +548,13 @@ void printMenu() {
     printf("\tl: Delete linked list\n");
 }
 
+/*
+ * Function: createList
+ * ----------------------------
+ *   Initialize and allocate memeory for a struct LinkList*
+ *
+ *   return: struct LinkedList* ptr of initialized empty link list
+ */
 struct LinkedList* createList() {
     struct LinkedList* list = malloc(sizeof(struct LinkedList));
     list->head = NULL;
@@ -552,6 +599,16 @@ struct LinkedList* convertStringToList(char *inputStr, int len)
     return innerlist;
 }
 
+/*
+ * Function: createObjectFromInput
+ * ----------------------------
+ *   Convert char* inputValue to a Object
+ *   Parses input str format and return the LinkedList Object with correct data type
+ *
+ *   inputStr: string entered by usesr
+ *
+ *   return: LinkedList* object
+ */
 struct Object* createObjectFromInput(char *inputValue) {
     struct Object *value = malloc(sizeof(struct Object));
     int length = strlen(inputValue);
