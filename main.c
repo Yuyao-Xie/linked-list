@@ -422,6 +422,10 @@ struct Node* max(struct LinkedList* list){
  *   listTwo: pointer to struct LinkedList*  list 2
  */
 void concat(struct LinkedList* listOne, struct LinkedList* listTwo){
+    if(listOne->head == NULL || listTwo->head == NULL
+       || listOne == NULL || listTwo == NULL){
+        return;
+    }
     listOne->tail->next = listTwo->head;
     listOne->tail = listTwo->tail;
     listOne->length += listTwo->length;
