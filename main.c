@@ -331,6 +331,7 @@ char* toStringHelper(struct Node* node){
         }
         case STRING:{
             string = node->value.data.String;
+            break;
         }
         case LIST:{
             combineListToStringHelper(node->value.data.list, string);
@@ -682,9 +683,9 @@ struct Object* createObjectFromInput(char *inputValue) {
 /*
  * Function: calculateLength
  * ----------------------------
- *   Calculate how many values are seperated by m
+ *   Calculate how many values are separated by ","
  *
- *   inputStr: string entered by usesr
+ *   inputStr: string entered by user
  *
  *   return: int length of values in inputStr
  */
@@ -759,8 +760,8 @@ int main() {
             case 'd':
                 printf("Enter a index you want to modify in the Linked List.\n");
                 gets(inputValue);
-                int indicesLength = calculateLength(inputValue);
-                int* indices = convertStringToIntegerArray(inputValue, indicesLength);
+                indicesLength = calculateLength(inputValue);
+                indices = convertStringToIntegerArray(inputValue, indicesLength);
                 printf("Please input the value you want.\n");
                 gets(inputValue);
                 if (modify(list, indices, indicesLength, *createObjectFromInput(inputValue)) == FALSE){
