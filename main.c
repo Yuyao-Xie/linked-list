@@ -579,6 +579,7 @@ void printMenu() {
     printf("\tk: Sort linked list in reverse\n");
     printf("\tl: Select a value at index\n");
     printf("\tm: Delete linked list\n");
+    printf("\t!: Exit program\n");
 }
 
 /*
@@ -812,8 +813,11 @@ int main() {
                 delete(list);
                 list = createList();
                 break;
-            default:
+            case '!':
                 return 0;
+            default:
+                printf("Enter input, please enter an valid option.\n");
+                continue;
         }
     }
 }
