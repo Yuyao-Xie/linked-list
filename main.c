@@ -55,7 +55,13 @@ void printMenu();
 struct LinkedList* createList();
 struct LinkedList* convertStringToList(char *inputStr, int len);
 
-
+/*
+ * Function: printNode
+ * ----------------------------
+ *   Print a single node
+ *
+ *   node: Node ptr to the node to be printed
+ */
 void printNode (struct Node* node){
     if(node == NULL){
         return;
@@ -112,6 +118,13 @@ void printObject(struct Object *object) {
     }
 }
 
+/*
+ * Function: printList
+ * ----------------------------
+ *   Print the entire list starting from head
+ *
+ *   list: LinkedList ptr to be printed
+ */
 void printList(struct LinkedList *list){
     struct Node* pointer = list->head;
 
@@ -144,6 +157,14 @@ struct Object* getValue(struct LinkedList* list, int* indices, int length) {
     return selectByIndex(list, indices[length - 1]);
 }
 
+/*
+ * Function: selectByIndex
+ * ----------------------------
+ *   Print the element a given index
+ *
+ *   list: LinkedList ptr to be looped to index
+ *   index: integer idx
+ */
 struct Object* selectByIndex(struct LinkedList* list, int index){
     struct Node* pointer = list->head;
     int i = 0;
@@ -151,7 +172,7 @@ struct Object* selectByIndex(struct LinkedList* list, int index){
         pointer = pointer->next;
         i++;
     }
-    return pointer;
+    return &pointer->value;
 
     /*switch (res.type){
         case INTEGER:{
@@ -177,6 +198,15 @@ struct Object* selectByIndex(struct LinkedList* list, int index){
     }*/
 }
 
+/*
+ * Function: modify
+ * ----------------------------
+ *   Modify elem in the linked list given index and object.
+ *
+ *   list: LinkedList ptr to be looped to index
+ *   index: int index in the linked list to be modified
+ *   value: Object elment to replace the current element
+ */
 void modify(struct LinkedList *list, int* indices, int length, struct Object value){
     struct Object *object = getValue(list, indices, length);
     if (object == NULL) {
@@ -185,6 +215,16 @@ void modify(struct LinkedList *list, int* indices, int length, struct Object val
     *object = value;
 }
 
+/*
+ * Function: append
+ * ----------------------------
+ *   Append a new elem to end of list.
+ *
+ *   list: List ptr to be appended
+ *   object: Object elment to be appened
+ *
+ *   returns: the pointer to linkedlist
+ */
 struct LinkedList* append(struct LinkedList *list, struct Object object){
     struct Node* newNode = malloc(sizeof(struct Node));
 
@@ -205,8 +245,28 @@ struct LinkedList* append(struct LinkedList *list, struct Object object){
     return list;
 }
 
-int length(struct LinkedList list){return list.length;}
+/*
+ * Function: length
+ * ----------------------------
+ *   Returns the length of the list
+ *
+ *   list: Linked List ptr
+ *
+ *   returns: int length of the list
+ */
+int length(struct LinkedList list){
+    return list.length;
+}
 
+/*
+ * Function: insert
+ * ----------------------------
+ *   Insert new Object at index of list.
+ *
+ *   list: struct LinkedList * ptr
+ *   index: index index to be inserted
+ *   object: Object to be inserted
+ */
 void insert(struct LinkedList *list, int index, struct Object object){
     struct Node *head = malloc(sizeof(struct Node));
     head->next = list->head;
@@ -232,6 +292,13 @@ void insert(struct LinkedList *list, int index, struct Object object){
     return;
 }
 
+/*
+ * Function: delete
+ * ----------------------------
+ *   Delete the linked list and free the memory.
+ *
+ *   list: struct LinkedList * ptr to be deleted
+ */
 void delete(struct LinkedList* list){
     while(list->head != NULL){
         struct Node* pointer = list->head;
@@ -247,6 +314,15 @@ void delete(struct LinkedList* list){
     free(list);
 }
 
+/*
+ * Function: toStringHelper
+ * ----------------------------
+ *   Helper function to convert Node* to string
+ *
+ *   node: struct Node* to be converted to string
+ *
+ *   return: char* str that's converted
+ */
 char* toStringHelper(struct Node* node){
     char* string = malloc(100*sizeof(char));
     switch (node->value.type){
@@ -268,6 +344,15 @@ char* toStringHelper(struct Node* node){
     }
     return string;
 }
+
+/*
+ * Function: combineListToStringHelper
+ * ----------------------------
+ *   Helper function convert LinkedList to char* str
+ *
+ *   list: struct LinkedList* to be converted to string
+ *   string: char* str ptr that represents the list
+ */
 void combineListToStringHelper(struct LinkedList* list, char* string){
     struct Node* pointer = list->head;
     while(pointer != NULL){
@@ -277,6 +362,16 @@ void combineListToStringHelper(struct LinkedList* list, char* string){
     }
     return;
 }
+
+/*
+ * Function: min
+ * ----------------------------
+ *   Find the min element in linked list
+ *
+ *   list: struct LinkedList * ptr
+ *
+ *   return: the mininum struct* Node int the list
+ */
 struct Node* min(struct LinkedList* list){
     if(list->head == NULL){
         return NULL;
@@ -295,6 +390,15 @@ struct Node* min(struct LinkedList* list){
     return minNode;
 }
 
+/*
+ * Function: max
+ * ----------------------------
+ *   Find the max element in linked list
+ *
+ *   list: struct LinkedList * ptr
+ *
+ *   return: the maxinium struct* Node int the list
+ */
 struct Node* max(struct LinkedList* list){
     if(list->head == NULL){
         return NULL;
@@ -313,6 +417,14 @@ struct Node* max(struct LinkedList* list){
     return maxNode;
 }
 
+/*
+ * Function: concat
+ * ----------------------------
+ *   Concat listTwo after listOne list together.
+ *
+ *   listOne: pointer to struct LinkedList*  list 1
+ *   listTwo: pointer to struct LinkedList*  list 2
+ */
 void concat(struct LinkedList* listOne, struct LinkedList* listTwo){
     listOne->tail->next = listTwo->head;
     listOne->tail = listTwo->tail;
@@ -320,6 +432,13 @@ void concat(struct LinkedList* listOne, struct LinkedList* listTwo){
     return;
 }
 
+/*
+ * Function: reverse
+ * ----------------------------
+ *   Reverse the list in-place.
+ *
+ *   list: pointer to struct LinkedList*  list to be reversed
+ */
 void reverse(struct LinkedList* list){
     if(list->head == NULL){
         return;
@@ -336,7 +455,15 @@ void reverse(struct LinkedList* list){
     return;
 }
 
-
+/*
+ * Function: getPreviousNodeOfMinHelper
+ * ----------------------------
+ *   Helper function to get the previous min Node
+ *
+ *   list: pointer to struct LinkedList* 
+ *
+ *   return: struct Node* previous min node
+ */
 struct Node* getPreviousNodeOfMinHelper(struct LinkedList* list){
     if(list->head == NULL){
         return NULL;
@@ -359,6 +486,15 @@ struct Node* getPreviousNodeOfMinHelper(struct LinkedList* list){
     return previousNode;
 }
 
+/*
+ * Function: getPreviousNodeOfMaxHelper
+ * ----------------------------
+ *   Helper function to get the previous max Node
+ *
+ *   list: pointer to struct LinkedList* 
+ *
+ *   return: struct Node* previous max node
+ */
 struct Node* getPreviousNodeOfMaxHelper(struct LinkedList* list){
     if(list->head == NULL){
         return NULL;
@@ -381,6 +517,13 @@ struct Node* getPreviousNodeOfMaxHelper(struct LinkedList* list){
     return previousNode;
 }
 
+/*
+ * Function: sort
+ * ----------------------------
+ *   Sort the linked list in place
+ *
+ *   list: pointer to struct LinkedList*  list to be sorted
+ */
 void sort(struct LinkedList* list, Boolean reverse){
     struct Node* newHead = malloc(sizeof(struct Node));
     struct Node* newListPtr = newHead;
@@ -420,6 +563,11 @@ void sort(struct LinkedList* list, Boolean reverse){
     free(newHead);
 }
 
+/*
+ * Function: printMenu
+ * ----------------------------
+ *   print the menu of the linklist application
+ */
 void printMenu() {
     printf("Python Linked List Menu\n");
     printf("   Selected the following options\n");
@@ -437,6 +585,13 @@ void printMenu() {
     printf("\tl: Delete linked list\n");
 }
 
+/*
+ * Function: createList
+ * ----------------------------
+ *   Initialize and allocate memeory for a struct LinkList*
+ *
+ *   return: struct LinkedList* ptr of initialized empty link list
+ */
 struct LinkedList* createList() {
     struct LinkedList* list = malloc(sizeof(struct LinkedList));
     list->head = NULL;
@@ -445,30 +600,51 @@ struct LinkedList* createList() {
     return list;
 }
 
-int* convertStringToIntegerArray(char *inputStr, int len) {
-    int* res = malloc(len * sizeof(int));
-    return res;
-}
-
-struct LinkedList* convertStringToList(char *inputStr, int len)
-{
+/*
+ * Function: convertStringToList
+ * ----------------------------
+ *   Convert char* string to a LinkedList Object
+ *   Parses the [1,2,3] str format and return the LinkedList Object
+ *
+ *   inputStr: string entered by usesr
+ *   len: the length of the str
+ *
+ *   return: LinkedList* object
+ */
+struct LinkedList* convertStringToList(char *inputStr, int len) {
+    // Declare and create a new list to be returned
     struct LinkedList *innerlist = createList();
 
+    // remove the starting '[' and ']' in the str
     char * pch;
     inputStr[len-1] = '\0';
     inputStr++;
 
+    // get the first value seperated by ','
     pch = strtok (inputStr,",");
 
+    // loop through to get all values seperated by ','
     while (pch != NULL)
     {
+        // append the object to the innerList
         append(innerlist, *createObjectFromInput(pch));
         pch = strtok (NULL, ",");
     }
 
+    // return the completed linkedlist
     return innerlist;
 }
 
+/*
+ * Function: createObjectFromInput
+ * ----------------------------
+ *   Convert char* inputValue to a Object
+ *   Parses input str format and return the LinkedList Object with correct data type
+ *
+ *   inputStr: string entered by usesr
+ *
+ *   return: LinkedList* object
+ */
 struct Object* createObjectFromInput(char *inputValue) {
     struct Object *value = malloc(sizeof(struct Object));
     int length = strlen(inputValue);
@@ -506,6 +682,35 @@ struct Object* createObjectFromInput(char *inputValue) {
     return value;
 }
 
+int calculateLength(char* inputStr) {
+    int cnt = 0;
+    int strLen = strlen(inputStr);
+    for (int i = 0; i<strLen; i++) {
+        if (inputStr[i] == ',') {
+            cnt++;
+        }
+    }
+    return cnt+1;
+}
+
+int* convertStringToIntegerArray(char *inputStr, int len) {
+    int* res = malloc(len * sizeof(int));
+    char* ptr = strtok(inputStr, ",");
+    int i = 0;
+    while (ptr != NULL) {
+        res[i++] = atoi(ptr);
+        ptr = strtok(NULL, ",");
+    }
+    return res;
+}
+
+/*
+ * Function: main
+ * ----------------------------
+ *   main driver function for linklist
+ *
+ *   return: status
+ */
 int main() {
     struct LinkedList *list = createList();
 
@@ -536,11 +741,13 @@ int main() {
                 break;
             case 'd':
                 printf("Enter a index you want to modify in the Linked List.\n");
-                scanf(" %d", &index);
                 gets(inputValue);
+                int indicesLength = calculateLength(inputValue);
+                int* indices = convertStringToIntegerArray(inputValue, indicesLength);
                 printf("Please input the value you want.\n");
                 gets(inputValue);
-                modify(list, index, *createObjectFromInput(inputValue));
+                modify(list, indices, indicesLength, *createObjectFromInput(inputValue));
+                free(indices);
                 break;
             case 'e':
                 printf("Enter a index you want to insert in the Linked List.\n");
