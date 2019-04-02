@@ -1,5 +1,5 @@
 // Yuyao Xie
-//Lacee Xu
+// Lacee Xu
 #include <stdio.h>
 #include<stdlib.h>
 #include <string.h>
@@ -90,6 +90,13 @@ void printNode (struct Node* node){
     }
 }
 
+/*
+ * Function: printObject
+ * ----------------------------
+ *   Print a Object struct from it different data types
+ *
+ *   object: struct Object *object ptr to be printed
+ */
 void printObject(struct Object *object) {
     if(object == NULL){
         printf("Value is not found!");
@@ -128,12 +135,12 @@ void printObject(struct Object *object) {
  */
 void printList(struct LinkedList *list){
     struct Node* pointer = list->head;
-
+    
     if(pointer == NULL) {
         printf("List is empty!\n");
         return;
     }
-
+    
     printf("[");
     while(pointer != NULL){
         printNode(pointer);
@@ -143,10 +150,19 @@ void printList(struct LinkedList *list){
         pointer = pointer->next;
     }
     printf("]");
-
+    
     return;
 }
 
+/*
+ * Function: getValue
+ * ----------------------------
+ *   Return the value at a given index
+ *
+ *   list: struct LinkedList* ptr
+ *   index: integer index of object to be returned
+ *   length: int length of the linked list
+ */
 struct Object* getValue(struct LinkedList* list, int* indices, int length) {
     for (int i = 0; i<length - 1; i++){
         struct Object *value = selectByIndex(list, indices[i]);
@@ -191,6 +207,7 @@ Boolean modify(struct LinkedList *list, int* indices, int length, struct Object 
         return FALSE;
     }
     *object = value;
+    return TRUE;
 }
 
 /*
@@ -205,19 +222,19 @@ Boolean modify(struct LinkedList *list, int* indices, int length, struct Object 
  */
 struct LinkedList* append(struct LinkedList *list, struct Object object){
     struct Node* newNode = malloc(sizeof(struct Node));
-
+    
     newNode->value = object;
     newNode->next = NULL;
-
+    
     if (list->tail == NULL) {
-
+        
         list->head = newNode;
         list->tail = newNode;
-
+        
     } else {
         list->tail->next = newNode;
         list->tail = newNode;
-
+        
     }
     list->length++;
     return list;
@@ -438,7 +455,7 @@ void reverse(struct LinkedList* list){
  * ----------------------------
  *   Helper function to get the previous min Node
  *
- *   list: pointer to struct LinkedList* 
+ *   list: pointer to struct LinkedList*
  *
  *   return: struct Node* previous min node
  */
@@ -469,7 +486,7 @@ struct Node* getPreviousNodeOfMinHelper(struct LinkedList* list){
  * ----------------------------
  *   Helper function to get the previous max Node
  *
- *   list: pointer to struct LinkedList* 
+ *   list: pointer to struct LinkedList*
  *
  *   return: struct Node* previous max node
  */
@@ -593,15 +610,15 @@ struct LinkedList* createList() {
 struct LinkedList* convertStringToList(char *inputStr, int len) {
     // Declare and create a new list to be returned
     struct LinkedList *innerlist = createList();
-
+    
     // remove the starting '[' and ']' in the str
     char * pch;
     inputStr[len-1] = '\0';
     inputStr++;
-
+    
     // get the first value seperated by ','
     pch = strtok (inputStr,",");
-
+    
     // loop through to get all values seperated by ','
     while (pch != NULL)
     {
@@ -609,7 +626,7 @@ struct LinkedList* convertStringToList(char *inputStr, int len) {
         append(innerlist, *createObjectFromInput(pch));
         pch = strtok (NULL, ",");
     }
-
+    
     // return the completed linkedlist
     return innerlist;
 }
@@ -630,7 +647,7 @@ struct Object* createObjectFromInput(char *inputValue) {
     Boolean isFloat = FALSE;
     Boolean isString = FALSE;
     Boolean isList = FALSE;
-
+    
     if(inputValue[0] == '[' && inputValue[length-1] == ']') {
         isList = TRUE;
     }
@@ -644,7 +661,7 @@ struct Object* createObjectFromInput(char *inputValue) {
             }
         }
     }
-
+    
     if (isString) {
         value->type = STRING;
         value->data.String = strcpy(malloc((strlen(inputValue) + 1) * sizeof(char)), inputValue);
@@ -661,6 +678,15 @@ struct Object* createObjectFromInput(char *inputValue) {
     return value;
 }
 
+/*
+ * Function: calculateLength
+ * ----------------------------
+ *   Calculate how many values are seperated by m
+ *
+ *   inputStr: string entered by usesr
+ *
+ *   return: int length of values in inputStr
+ */
 int calculateLength(char* inputStr) {
     int cnt = 0;
     int strLen = strlen(inputStr);
@@ -672,6 +698,16 @@ int calculateLength(char* inputStr) {
     return cnt+1;
 }
 
+/*
+ * Function: convertStringToIntegerArray
+ * ----------------------------
+ *   Convert char * input str to a int array
+ *
+ *   inputStr: string entered by usesr
+ *   len: int length of input
+ *
+ *   return: int array converted from string
+ */
 int* convertStringToIntegerArray(char *inputStr, int len) {
     int* res = malloc(len * sizeof(int));
     char* ptr = strtok(inputStr, ",");
@@ -692,14 +728,14 @@ int* convertStringToIntegerArray(char *inputStr, int len) {
  */
 int main() {
     struct LinkedList *list = createList();
-
+    
     char option;
     char *inputValue = malloc(128 * sizeof(char));
     int index, indicesLength;
     int* indices;
     while(1) {
         printMenu();
-
+        
         gets(inputValue);
         if (strlen(inputValue) == 0 || strlen(inputValue) > 1) {
             printf("Please input valid option.\n");
